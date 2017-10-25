@@ -12,6 +12,13 @@ Game::Game() :
 	setupFontAndText(); // load font 
 	setUpPlane();
 	setUpCircle();
+	Ux = U * cos(angleDegrees);
+	Uy = U * sin(angleDegrees);
+	velocity = { Ux, Uy };
+	gravity *= pixelsToMetres;
+	velocity *= pixelsToMetres;
+	position = ogPosition;
+	//velocity = ogVelocity;
 }
 
 
@@ -59,6 +66,17 @@ void Game::processEvents()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			move = true;
+			bounce = true;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+		{
+			position = ogPosition;
+			velocity = ogVelocity;
+			move = false;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+		{
+
 		}
 	}
 }
@@ -122,8 +140,12 @@ void Game::gravityfunc()
 {
 	if (move == true)
 	{
-		(position.x, position.y) = (position.x, position.y) + (velocity.x, velocity.y) * timeChange + 0.5 * acceleration * (timeChange * timeChange);
-		velocity = velocity + sf::Vector2f(0, acceleration) * timeChange;
+		
+		position.x = position.x + velocity.x * timeChange + 0.5 * gravity.x * (timeChange * timeChange);
+		position.y = position.y + velocity.y * timeChange + 0.5 * gravity.y * (timeChange * timeChange);
+
+		velocity.y = velocity.y + gravity.y * timeChange;
+		velocity.x = velocity.x + gravity.x * timeChange;
 
 		// out put the time it takes to get off the ground and back on it
 		timer++;
@@ -142,6 +164,18 @@ void Game::gravityfunc()
 	if (position.y > (planePos.y - 1))
 	{
 		move = false;
+
+		velocity.y = -.9 * velocity.y;
+		
+		if (bounce)
+		{
+			bounce = false;
+			move = true;
+		}
+		else
+		{
+			bounce = false;
+		}
 	}
 
 	//gets what the highest position is.
@@ -162,6 +196,7 @@ void Game::setUpCircle()
 {
 	shape.setFillColor(sf::Color::White);
 	shape.setPosition(position);
+	shape.setRadius(5);
 }
 
 
