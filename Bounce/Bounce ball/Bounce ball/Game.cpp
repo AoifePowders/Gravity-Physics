@@ -18,7 +18,8 @@ Game::Game() :
 	gravity *= pixelsToMetres;
 	velocity *= pixelsToMetres;
 	position = ogPosition;
-	//velocity = ogVelocity;
+	velocity = ogVelocity;
+	angleDegrees = angle / (3.14 * 180);
 }
 
 
@@ -74,9 +75,33 @@ void Game::processEvents()
 			velocity = ogVelocity;
 			move = false;
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::V))
+		{
+			U++;
+			Ux = U * cos(angle);
+			Uy = U * sin(angle);
+			velocity = { Ux, Uy };
+			velocityText.setString("Velocity:" + std::to_string(U));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+		{
+			U--;
+			Ux = U * cos(angle);
+			Uy = U * sin(angle);
+			velocity = { Ux, Uy };
+			velocityText.setString("Velocity:" + std::to_string(U));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
+		{
+			angle++;
+			angleDegrees = angle / (3.14 * 180);
+			angleText.setString("Angle:" + std::to_string(angle) + "Degrees");
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 		{
-
+			angle++;
+			angleDegrees = angle / (3.14 * 180);
+			angleText.setString("Angle:" + std::to_string(angle) + "Degrees");
 		}
 	}
 }
@@ -88,7 +113,8 @@ void Game::update(sf::Time t_deltaTime)
 		m_window.close();
 	}
 	gravityfunc();
-	shape.setPosition(position);
+	shape.setPosition(position);	
+	
 }
 
 void Game::render()
@@ -98,8 +124,9 @@ void Game::render()
 	m_window.draw(shape);
 	m_window.draw(text);
 	m_window.draw(timeTaken);
-	m_window.draw(estHeight);
-	m_window.draw(estTime);
+	m_window.draw(velocityText);
+	m_window.draw(angleText);
+	m_window.draw(distanceX);
 	m_window.display();
 }
 
@@ -111,28 +138,34 @@ void Game::setupFontAndText()
 	}
 
 	text.setFont(m_font);
-	text.setString("HEIGHT: " + std::to_string(heighest));
+	text.setString("Height: " + std::to_string(heighest) + " Meters");
 	text.setCharacterSize(20);
 	text.setPosition(100, 100);
 	text.setFillColor(sf::Color::White);
 
 	timeTaken.setFont(m_font);
-	timeTaken.setString("Time: " + std::to_string(actualTimer));
+	timeTaken.setString("Time: " + std::to_string(actualTimer) + " Seconds");
 	timeTaken.setCharacterSize(20);
 	timeTaken.setPosition(100, 150);
 	timeTaken.setFillColor(sf::Color::White);
 
-	estTime.setFont(m_font);
-	estTime.setString("Estimated Time: 9  seconds");
-	estTime.setCharacterSize(20);
-	estTime.setPosition(500, 150);
-	estTime.setFillColor(sf::Color::White);
+	distanceX.setFont(m_font);
+	distanceX.setString("Distance X:" + std::to_string(Furthest) + " Meters");
+	distanceX.setCharacterSize(20);
+	distanceX.setPosition(100, 200);
+	distanceX.setFillColor(sf::Color::White);
 
-	estHeight.setFont(m_font);
-	estHeight.setString("Estimated Height: 100 pixels");
-	estHeight.setCharacterSize(20);
-	estHeight.setPosition(500, 100);
-	estHeight.setFillColor(sf::Color::White);
+	velocityText.setFont(m_font); 
+	velocityText.setString("Velocity Y:" + std::to_string(U));
+	velocityText.setCharacterSize(20);
+	velocityText.setPosition(400, 100);
+	velocityText.setFillColor(sf::Color::White);  
+
+	angleText.setFont(m_font);
+	angleText.setString("Angle:" + std::to_string(angle) + " Degrees");
+	angleText.setCharacterSize(20);
+	angleText.setPosition(400, 200);
+	angleText.setFillColor(sf::Color::White);
 
 }
 
@@ -156,9 +189,8 @@ void Game::gravityfunc()
 		}
 
 		timeTaken.setString("Time: " + std::to_string(actualTimer) + "." + std::to_string(timer));
-		text.setString("HEIGHT: " + std::to_string(heighest));
-		std::cout << actualTimer << std::endl;
-
+		text.setString("HEIGHT: " + std::to_string(heighest) + " Meters");
+		distanceX.setString("Distance X:" + std::to_string(Furthest) + " Meters");
 	}
 	//stops the pixel when it hits the plane
 	if (position.y > (planePos.y - 1))
@@ -182,6 +214,11 @@ void Game::gravityfunc()
 	if (planePos.y - position.y > heighest)
 	{
 		heighest = planePos.y - position.y;
+	}
+
+	if (position.x  - planePos.x  > Furthest)
+	{
+		Furthest = planePos.x - position.x;
 	}
 }
 

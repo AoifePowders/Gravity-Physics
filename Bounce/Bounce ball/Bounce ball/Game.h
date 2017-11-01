@@ -10,9 +10,7 @@ class Game
 public:
 	Game();
 	~Game();
-	/// <summary>
 	/// main method for game
-	/// </summary>
 	void run();
 
 private:
@@ -34,17 +32,19 @@ private:
 	sf::Text m_welcomeMessage; // text used for message on screen
 	sf::Text text;
 	sf::Text timeTaken;
-	sf::Text estTime;
-	sf::Text estHeight;
+	sf::Text distanceX;
+	sf::Text velocityText;
+	sf::Text angleText;
 
 	bool m_exitGame; // control exiting game
 	bool move = false;
 
 	float angle = 45;
-	float angleDegrees = angle * 3.14 / 180;
+	float angleDegrees;
 	float Ux;
 	float Uy;
-	float U = 50;
+	float U = 100;
+	float Furthest = 0;
 
 	sf::Vector2f size{ 800, 100 };
 	sf::Vector2f ogVelocity{ 90, -190.27 };
