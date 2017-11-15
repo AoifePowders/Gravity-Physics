@@ -1,4 +1,5 @@
-// author Peter Lowe
+// author Aoife Powders
+
 
 #include "Game.h"
 #include <iostream>
@@ -12,14 +13,14 @@ Game::Game() :
 	setupFontAndText(); // load font 
 	setUpPlane();
 	setUpCircle();
-	Ux = U * cos(angleDegrees);
-	Uy = U * sin(angleDegrees);
+	Ux = U * std::cos(angle);
+	Uy = U * std::sin(angle);
 	velocity = { Ux, Uy };
 	gravity *= pixelsToMetres;
-	velocity *= pixelsToMetres;
+	ogVelocity = velocity;
 	position = ogPosition;
 	velocity = ogVelocity;
-	angleDegrees = angle / (3.14 * 180);
+	angleDegrees = angle * (180 / 3.14);
 }
 
 
@@ -73,6 +74,9 @@ void Game::processEvents()
 		{
 			position = ogPosition;
 			velocity = ogVelocity;
+			velocity = { Ux, Uy };
+			velocityText.setString("Velocity:" + std::to_string(U));
+			angleText.setString("Angle:" + std::to_string(angleDegrees)+ "Degrees");
 			move = false;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::V))
@@ -80,7 +84,6 @@ void Game::processEvents()
 			U++;
 			Ux = U * cos(angle);
 			Uy = U * sin(angle);
-			velocity = { Ux, Uy };
 			velocityText.setString("Velocity:" + std::to_string(U));
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
@@ -88,20 +91,23 @@ void Game::processEvents()
 			U--;
 			Ux = U * cos(angle);
 			Uy = U * sin(angle);
-			velocity = { Ux, Uy };
 			velocityText.setString("Velocity:" + std::to_string(U));
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
 		{
-			angle++;
-			angleDegrees = angle / (3.14 * 180);
-			angleText.setString("Angle:" + std::to_string(angle) + "Degrees");
+			angle-=0.1;
+			angleDegrees = angle * (180 / 3.14);
+			Ux = U * cos(angle);
+			Uy = U * sin(angle);
+			angleText.setString("Angle:" + std::to_string(angleDegrees) + "Degrees");
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 		{
-			angle++;
-			angleDegrees = angle / (3.14 * 180);
-			angleText.setString("Angle:" + std::to_string(angle) + "Degrees");
+			angle+=0.1;
+			angleDegrees = angle * (180 / 3.14);
+			Ux = U * cos(angle);
+			Uy = U * sin(angle);
+			angleText.setString("Angle:" + std::to_string(angleDegrees) + "Degrees");
 		}
 	}
 }
@@ -156,7 +162,7 @@ void Game::setupFontAndText()
 	distanceX.setFillColor(sf::Color::White);
 
 	velocityText.setFont(m_font); 
-	velocityText.setString("Velocity Y:" + std::to_string(U));
+	velocityText.setString("Velocity:" + std::to_string(U));
 	velocityText.setCharacterSize(20);
 	velocityText.setPosition(400, 100);
 	velocityText.setFillColor(sf::Color::White);  
@@ -174,8 +180,8 @@ void Game::gravityfunc()
 	if (move == true)
 	{
 		
-		position.x = position.x + velocity.x * timeChange + 0.5 * gravity.x * (timeChange * timeChange);
-		position.y = position.y + velocity.y * timeChange + 0.5 * gravity.y * (timeChange * timeChange);
+		position.x = position.x + velocity.x * timeChange + (0.5 * gravity.x * (timeChange * timeChange));
+		position.y = position.y + velocity.y * timeChange + (0.5 * gravity.y * (timeChange * timeChange));
 
 		velocity.y = velocity.y + gravity.y * timeChange;
 		velocity.x = velocity.x + gravity.x * timeChange;
@@ -193,14 +199,16 @@ void Game::gravityfunc()
 		distanceX.setString("Distance X:" + std::to_string(Furthest) + " Meters");
 	}
 	//stops the pixel when it hits the plane
-	if (position.y > (planePos.y - 1))
+	if (position.y > planePos.y)
 	{
 		move = false;
 
 		velocity.y = -.9 * velocity.y;
 		
+		
 		if (bounce)
 		{
+			position.y -= 1;
 			bounce = false;
 			move = true;
 		}

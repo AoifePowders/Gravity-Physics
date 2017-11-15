@@ -39,18 +39,18 @@ private:
 	bool m_exitGame; // control exiting game
 	bool move = false;
 
-	float angle = 45;
+	float angle = -0.785398;
 	float angleDegrees;
-	float Ux;
-	float Uy;
+	float Ux{ 0 };
+	float Uy{ 0 };
 	float U = 100;
 	float Furthest = 0;
 
 	sf::Vector2f size{ 800, 100 };
 	sf::Vector2f ogVelocity{ 90, -190.27 };
 	sf::Vector2f velocity;
-	sf::Vector2f ogPosition{ 100, 699 };
-	sf::Vector2f position{ 0, 0 };
+	sf::Vector2f ogPosition{ 100, 698 };
+	sf::Vector2f position{ 100, 698 };
 	sf::Vector2f planePos{ 1, 700 };
 	sf::Vector2f gravity{ 0.0f, 9.8f };
 
@@ -58,7 +58,7 @@ private:
 	int timer = 0;
 	int actualTimer = 0;
 	float timeChange;
-	bool bounce = false;
+	bool bounce = true;
 	float pixelsToMetres = 10;
 
 };
