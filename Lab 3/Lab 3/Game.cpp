@@ -1,10 +1,6 @@
 // author Aoife Powders
-
-
 #include "Game.h"
 #include <iostream>
-
-
 
 Game::Game() :
 	m_window{ sf::VideoMode{ 800, 800, 32 }, "SFML Game" },
@@ -41,6 +37,7 @@ void Game::run()
 		while (timeSinceLastUpdate > timePerFrame)
 		{
 			timeChange = timeSinceLastUpdate.asSeconds();
+			incTime = timeChange -= timePerFrame.asSeconds();
 			timeSinceLastUpdate -= timePerFrame;
 			processEvents(); // at least 60 fps
 			update(timePerFrame); //60 fps
@@ -118,8 +115,8 @@ void Game::update(sf::Time t_deltaTime)
 		m_window.close();
 	}
 	gravityfunc();
-	shape.setPosition(position);	
-	
+	shape.setPosition(position);
+	airResistance();
 }
 
 void Game::render()
@@ -156,8 +153,9 @@ void Game::setupFontAndText()
 
 void Game::airResistance()
 {
-	ma = mass * accel;
-	ma = (mass * grav) - airRes;
+	accel = gravity - (Ca / mass) * (sqrt(ogVelocity.x * ogVelocity.x + ogVelocity.y * ogVelocity.y)) * ogVelocity;
+	position = position + ogVelocity * incTime + 0.5f * accel * (incTime) * (incTime);
+	velocity = ogVelocity + accel * incTime;
 }
 
 void Game::gravityfunc()
@@ -165,11 +163,11 @@ void Game::gravityfunc()
 	if (move == true)
 	{
 		
-		position.x = position.x + velocity.x * timeChange + (0.5 * gravity.x * (timeChange * timeChange));
-		position.y = position.y + velocity.y * timeChange + (0.5 * gravity.y * (timeChange * timeChange));
+		//position.x = position.x + velocity.x * timeChange + (0.5 * gravity.x * (timeChange * timeChange));
+		//position.y = position.y + velocity.y * timeChange + (0.5 * gravity.y * (timeChange * timeChange));
 
-		velocity.y = velocity.y + gravity.y * timeChange;
-		velocity.x = velocity.x + gravity.x * timeChange;
+		//velocity.y = velocity.y + gravity.y * timeChange;
+		//velocity.x = velocity.x + gravity.x * timeChange;
 
 		// out put the time it takes to get off the ground and back on it
 		timer++;

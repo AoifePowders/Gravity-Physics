@@ -42,7 +42,6 @@ private:
 	float Ux{ 0 };
 	float Uy{ 0 };
 	float U = 100;
-	float Furthest = 0;
 
 	sf::Vector2f size{ 800, 100 };
 	sf::Vector2f ogVelocity{ 90, -190.27 };
@@ -52,10 +51,11 @@ private:
 	sf::Vector2f planePos{ 1, 700 };
 	sf::Vector2f gravity{ 0.0f, 9.8f };
 
-	float mass = 50;
-	float airRes = 10;
-	float accel = 0;
+	float mass = 0.1;
+	sf::Vector2f accel;
 	float grav = 9.8;
+	float Ca = 0.001;
+	float incTime;
 	float ma = 0;
 
 	float heighest = 0;
