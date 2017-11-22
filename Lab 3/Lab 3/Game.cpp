@@ -17,6 +17,7 @@ Game::Game() :
 	position = ogPosition;
 	velocity = ogVelocity;
 	angleDegrees = angle * (180 / 3.14);
+	weight = mass * gravity.y;
 }
 
 
@@ -37,7 +38,6 @@ void Game::run()
 		while (timeSinceLastUpdate > timePerFrame)
 		{
 			timeChange = timeSinceLastUpdate.asSeconds();
-			incTime = timeChange -= timePerFrame.asSeconds();
 			timeSinceLastUpdate -= timePerFrame;
 			processEvents(); // at least 60 fps
 			update(timePerFrame); //60 fps
@@ -116,7 +116,9 @@ void Game::update(sf::Time t_deltaTime)
 	}
 	gravityfunc();
 	shape.setPosition(position);
-	airResistance();
+	collision();
+	
+	
 }
 
 void Game::render()
@@ -153,21 +155,33 @@ void Game::setupFontAndText()
 
 void Game::airResistance()
 {
-	accel = gravity - (Ca / mass) * (sqrt(ogVelocity.x * ogVelocity.x + ogVelocity.y * ogVelocity.y)) * ogVelocity;
-	position = position + ogVelocity * incTime + 0.5f * accel * (incTime) * (incTime);
-	velocity = ogVelocity + accel * incTime;
+	//accel = gravity - (Ca / mass* gravity.y) * (sqrt(velocity.x * velocity.x + velocity.y * velocity.y)) * velocity;
+	accel.y	 = gravity.y - (Ca / weight) * (velocity.y * velocity.y );
+	accel.x = gravity.x - (Ca /weight) * (velocity.x * velocity.x);
+	position = position + velocity * timeChange + (0.5f * accel * (timeChange) * (timeChange));
+	velocity = ogVelocity + accel * timeChange;
+}
+
+void Game::collision()
+{
+	if (target.getGlobalBounds().intersects(shape.getGlobalBounds()))
+	{
+		velocity = { 0,0 };
+	}
 }
 
 void Game::gravityfunc()
 {
 	if (move == true)
 	{
-		
-		//position.x = position.x + velocity.x * timeChange + (0.5 * gravity.x * (timeChange * timeChange));
-		//position.y = position.y + velocity.y * timeChange + (0.5 * gravity.y * (timeChange * timeChange));
+	
+		/*position.x = position.x + velocity.x * timeChange + (0.5 * gravity.x * (timeChange * timeChange));
+		position.y = position.y + velocity.y * timeChange + (0.5 * gravity.y * (timeChange * timeChange));
 
-		//velocity.y = velocity.y + gravity.y * timeChange;
-		//velocity.x = velocity.x + gravity.x * timeChange;
+		velocity.y = velocity.y + gravity.y * timeChange;
+		velocity.x = velocity.x + gravity.x * timeChange;*/
+		 
+		airResistance();
 
 		// out put the time it takes to get off the ground and back on it
 		timer++;
@@ -201,7 +215,7 @@ void Game::setUpCircle()
 	shape.setRadius(5);
 
 	target.setFillColor(sf::Color::Magenta);
-	target.setPosition(600, 400);
+	target.setPosition(600, 680);
 	target.setRadius(10);
 
 }
