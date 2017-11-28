@@ -23,7 +23,6 @@ private:
 	void setUpPlane();
 	void setUpCircle();
 	void setupFontAndText();
-	void airResistance();
 	void collision();
 
 	sf::CircleShape shape{ 0.5f };
@@ -34,9 +33,12 @@ private:
 	sf::Font m_font; // font used by message
 	sf::Text velocityText;
 	sf::Text angleText;
+	sf::Text airResText;
+	sf::Text attemptText;
 
 	bool m_exitGame; // control exiting game
 	bool move = false;
+
 
 	float angle = -.785398;
 	float angleDegrees;
@@ -64,6 +66,8 @@ private:
 	float timeChange;
 	float pixelsToMetres = 5;
 	float weight{ 1000 };
+
+	int attempt = 0;
 
 };
 

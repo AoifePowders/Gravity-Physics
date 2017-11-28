@@ -12,12 +12,12 @@ Game::Game() :
 	Ux = U * std::cos(angle);
 	Uy = U * std::sin(angle);
 	velocity = { Ux, Uy };
-	gravity *= pixelsToMetres;
 	ogVelocity = velocity;
 	position = ogPosition;
 	velocity = ogVelocity;
 	angleDegrees = angle * (180 / 3.14);
 	weight = mass * gravity.y;
+	
 }
 
 
@@ -65,6 +65,8 @@ void Game::processEvents()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			move = true;
+			attempt++;
+			attemptText.setString("Attempts :" + std::to_string(attempt));
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
 		{
@@ -82,7 +84,7 @@ void Game::processEvents()
 			Uy = U * sin(angle);
 			velocityText.setString("Velocity:" + std::to_string(U));
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
 		{
 			U--;
 			Ux = U * cos(angle);
@@ -105,6 +107,17 @@ void Game::processEvents()
 			Uy = U * sin(angle);
 			angleText.setString("Angle:" + std::to_string(angleDegrees) + "Degrees");
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+		{
+			Ca++;
+			airResText.setString("Air Res :" + std::to_string(Ca));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+		{
+			Ca--;
+			airResText.setString("Air Res:" + std::to_string(Ca));
+		}
+
 	}
 }
 
@@ -117,8 +130,6 @@ void Game::update(sf::Time t_deltaTime)
 	gravityfunc();
 	shape.setPosition(position);
 	collision();
-	
-	
 }
 
 void Game::render()
@@ -129,6 +140,8 @@ void Game::render()
 	m_window.draw(target);
 	m_window.draw(velocityText);
 	m_window.draw(angleText);
+	m_window.draw(airResText);
+	m_window.draw(attemptText);
 	m_window.display();
 }
 
@@ -151,15 +164,18 @@ void Game::setupFontAndText()
 	angleText.setPosition(100, 150);
 	angleText.setFillColor(sf::Color::White);
 
-}
+	airResText.setFont(m_font);
+	airResText.setString("Air Res :" + std::to_string(Ca));
+	airResText.setCharacterSize(20);
+	airResText.setPosition(100, 200);
+	airResText.setFillColor(sf::Color::White);
 
-void Game::airResistance()
-{
-	//accel = gravity - (Ca / mass* gravity.y) * (sqrt(velocity.x * velocity.x + velocity.y * velocity.y)) * velocity;
-	accel.y	 = gravity.y - (Ca / weight) * (velocity.y * velocity.y );
-	accel.x = gravity.x - (Ca /weight) * (velocity.x * velocity.x);
-	position = position + velocity * timeChange + (0.5f * accel * (timeChange) * (timeChange));
-	velocity = ogVelocity + accel * timeChange;
+	attemptText.setFont(m_font);
+	attemptText.setString("Attempts :" + std::to_string(attempt));
+	attemptText.setCharacterSize(20);
+	attemptText.setPosition(100, 250);
+	attemptText.setFillColor(sf::Color::White);
+
 }
 
 void Game::collision()
@@ -174,29 +190,20 @@ void Game::gravityfunc()
 {
 	if (move == true)
 	{
-	
-		/*position.x = position.x + velocity.x * timeChange + (0.5 * gravity.x * (timeChange * timeChange));
-		position.y = position.y + velocity.y * timeChange + (0.5 * gravity.y * (timeChange * timeChange));
+		accel.y = gravity.y - (Ca / weight) * (velocity.y * velocity.y);
+		accel.x = gravity.x - (Ca / weight) * (velocity.x * velocity.x);
 
-		velocity.y = velocity.y + gravity.y * timeChange;
-		velocity.x = velocity.x + gravity.x * timeChange;*/
-		 
-		airResistance();
+		position.x = position.x + velocity.x * timeChange + (0.5 * accel.x * (timeChange * timeChange));
+		position.y = position.y + velocity.y * timeChange + (0.5 * accel.y * (timeChange * timeChange));
 
-		// out put the time it takes to get off the ground and back on it
-		timer++;
-		if (timer == 60)
-		{
-			timer = 0;
-			actualTimer++;
-		}
+		velocity.y = velocity.y + accel.y * timeChange;
+		velocity.x = velocity.x + accel.x * timeChange;
 
 	}
 	//stops the pixel when it hits the plane
-	if (position.y > planePos.y)
+ 	if (position.y > planePos.y)
 	{
 		move = false;
-
 		velocity.y = -.9 * velocity.y;
 	}
 }
@@ -217,7 +224,6 @@ void Game::setUpCircle()
 	target.setFillColor(sf::Color::Magenta);
 	target.setPosition(600, 680);
 	target.setRadius(10);
-
 }
 
 
