@@ -142,6 +142,7 @@ void Game::render()
 	m_window.draw(angleText);
 	m_window.draw(airResText);
 	m_window.draw(attemptText);
+	m_window.draw(rangeShape);
 	m_window.display();
 }
 
@@ -199,6 +200,9 @@ void Game::gravityfunc()
 		velocity.y = velocity.y + accel.y * timeChange;
 		velocity.x = velocity.x + accel.x * timeChange;
 
+		range = (U * U) * std::sin(-2 * angle) / (gravity.y * pixelsToMetres);
+		rangeShape.setPosition(ogPosition.x + range, ogPosition.y);
+
 	}
 	//stops the pixel when it hits the plane
  	if (position.y > planePos.y)
@@ -224,6 +228,10 @@ void Game::setUpCircle()
 	target.setFillColor(sf::Color::Magenta);
 	target.setPosition(600, 680);
 	target.setRadius(10);
+
+	rangeShape.setFillColor(sf::Color::Cyan);
+	rangeShape.setPosition(10,10);
+	rangeShape.setRadius(5);
 }
 
 

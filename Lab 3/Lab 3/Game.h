@@ -28,6 +28,7 @@ private:
 	sf::CircleShape shape{ 0.5f };
 	sf::CircleShape target{ 1.0f };
 	sf::RectangleShape m_plane;
+	sf::CircleShape rangeShape{ 0.5f };
 
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_font; // font used by message
@@ -68,6 +69,7 @@ private:
 	float weight{ 1000 };
 
 	int attempt = 0;
+	float range = 0;
 
 };
 
