@@ -115,24 +115,24 @@ void setUpText()
 	text.setString("HEIGHT: " + std::to_string(heighest));
 	text.setCharacterSize(20);
 	text.setPosition(100, 100);
-	text.setColor(sf::Color::White);
+	text.setFillColor(sf::Color::White);
 
 	timeTaken.setFont(font);
 	timeTaken.setString("Time: " + std::to_string(actualTimer));
 	timeTaken.setCharacterSize(20);
 	timeTaken.setPosition(100, 150);
-	timeTaken.setColor(sf::Color::White);
+	timeTaken.setFillColor(sf::Color::White);
 
 	estTime.setFont(font);
 	estTime.setString("Estimated Time: 9  seconds");
 	estTime.setCharacterSize(20);
 	estTime.setPosition(500, 150);
-	estTime.setColor(sf::Color::White);
+	estTime.setFillColor(sf::Color::White);
 
 	estHeight.setFont(font);
 	estHeight.setString("Estimated Height: 100 pixels");
 	estHeight.setCharacterSize(20);
 	estHeight.setPosition(500, 100);
-	estHeight.setColor(sf::Color::White);
+	estHeight.setFillColor(sf::Color::White);
 }
 
