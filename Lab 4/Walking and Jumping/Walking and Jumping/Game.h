@@ -36,7 +36,12 @@ private:
 
 	sf::Vector2f m_velocity{ 0, -44.25 };
 	sf::Vector2f m_moveVelocity{ 5,0 };
-	float m_acceleration = 9.8f;
+	float m_pixelToMeter = 20.0;
+	float m_acceleration = 9.8f * 20.0;
+	float m_coeffFriction;
+	float m_mass = 10;
+	sf::Vector2f m_unitVelocity;
+	sf::Vector2f m_frictionAcceleration;
 	float m_timeChange;
 	sf::Vector2f m_position{ 50,450 };
 
