@@ -38,7 +38,6 @@ private:
 	float m_pixelToMeter = 20.0;
 	float m_acceleration = 9.8f * 20.0;
 	float m_coeffFriction = 0.8;
-	float m_mass = 10;
 	sf::Vector2f m_unitVelocity;
 	sf::Vector2f m_frictionAcceleration;
 	float m_timeChange;
