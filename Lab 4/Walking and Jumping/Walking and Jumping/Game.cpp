@@ -107,9 +107,7 @@ void Game::jump()
 	m_unitVelocity.x = m_velocity.x / sqrt(m_velocity.x*m_velocity.x + m_velocity.y*m_velocity.y);
 	m_unitVelocity.y = m_velocity.y / sqrt(m_velocity.x*m_velocity.x + m_velocity.y*m_velocity.y);
 
-	m_coeffFriction = m_mass * m_mass;
-
-	m_frictionAcceleration = -m_coeffFriction * m_acceleration * m_unitVelocity;
+	m_frictionAcceleration.x = -m_coeffFriction * m_acceleration * m_unitVelocity.x;
 
 	if (m_jump == true)
 	{
@@ -120,26 +118,26 @@ void Game::jump()
 
 	if (m_moveLeft == true)
 	{
-		m_position = m_position - m_moveVelocity;
-		(m_position.x, m_position.y) = (m_position.x, m_position.y) + (m_velocity.x, m_velocity.y) * m_timeChange + 0.5 * m_acceleration * (m_timeChange * m_timeChange);
+		m_position.x = m_position.x + m_velocity.x * m_timeChange + 0.5 * m_frictionAcceleration.x * (m_timeChange * m_timeChange);
 		m_velocity = m_velocity + m_frictionAcceleration * m_timeChange;
+		m_position.x = m_position.x - m_velocity.x;
 		m_player.setPosition(m_position);
-		if (m_player.getPosition().x < 10)
-		{
-			m_moveLeft = false;
-		}
+	}
+	if (m_player.getPosition().x < 10)
+	{
+		m_moveLeft = false;
 	}
 
 	if (m_moveRight == true)
 	{
-		(m_position.x, m_position.y) = (m_position.x, m_position.y) + (m_velocity.x, m_velocity.y) * m_timeChange + 0.5 * m_acceleration * (m_timeChange * m_timeChange);
+		m_position.x = m_position.x + m_velocity.x * m_timeChange + 0.5 * m_frictionAcceleration.x * (m_timeChange * m_timeChange);
 		m_velocity = m_velocity + m_frictionAcceleration * m_timeChange;
-		m_position = m_position + m_moveVelocity;
+		m_position.x = m_position.x + m_velocity.x;
 		m_player.setPosition(m_position);
-		if (m_player.getPosition().x > 710)
-		{
-			m_moveRight = false;
-		}
+	}
+	if (m_player.getPosition().x > 710)
+	{
+		m_moveRight = false;
 	}
 
 	if (m_position.y > (m_plane.getPosition().y - 50))

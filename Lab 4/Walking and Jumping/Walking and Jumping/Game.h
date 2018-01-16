@@ -1,4 +1,4 @@
-// author Peter Lowe
+// author Apoi
 #ifndef GAME
 #define GAME
 #include <SFML/Graphics.hpp>
@@ -34,11 +34,10 @@ private:
 	bool m_moveLeft;
 	bool m_moveRight;
 
-	sf::Vector2f m_velocity{ 0, -44.25 };
-	sf::Vector2f m_moveVelocity{ 5,0 };
+	sf::Vector2f m_velocity{ 10, -44.25 };
 	float m_pixelToMeter = 20.0;
 	float m_acceleration = 9.8f * 20.0;
-	float m_coeffFriction;
+	float m_coeffFriction = 0.8;
 	float m_mass = 10;
 	sf::Vector2f m_unitVelocity;
 	sf::Vector2f m_frictionAcceleration;
