@@ -104,13 +104,16 @@ void Game::render()
 
 void Game::jump()
 {
+	//get unit velocity
 	m_unitVelocity.x = m_velocity.x / sqrt(m_velocity.x*m_velocity.x + m_velocity.y*m_velocity.y);
 	m_unitVelocity.y = m_velocity.y / sqrt(m_velocity.x*m_velocity.x + m_velocity.y*m_velocity.y);
-
+	//get acceleration
 	m_frictionAcceleration.x = -m_coeffFriction * m_acceleration * m_unitVelocity.x;
 
+	//jump
 	if (m_jump == true)
 	{
+		//calculate the position and velocity
 		(m_position.x, m_position.y) = (m_position.x, m_position.y) + (m_velocity.x, m_velocity.y) * m_timeChange + 0.5 * m_acceleration * (m_timeChange * m_timeChange);
 		m_velocity = m_velocity + sf::Vector2f(0, m_acceleration) * m_timeChange;
 		m_player.setPosition(m_position);
@@ -118,34 +121,56 @@ void Game::jump()
 
 	if (m_moveLeft == true)
 	{
+		//calculate friction velocity and position when moving left
 		m_position.x = m_position.x + m_velocity.x * m_timeChange + 0.5 * m_frictionAcceleration.x * (m_timeChange * m_timeChange);
 		m_velocity = m_velocity + m_frictionAcceleration * m_timeChange;
 		m_position.x = m_position.x - m_velocity.x;
 		m_player.setPosition(m_position);
 	}
+	//boundary
 	if (m_player.getPosition().x < 10)
 	{
+		m_moveLeft = false;
+	}
+	//reset velocity when stopped
+	if (m_velocity.x <= 1)
+	{
+		m_velocity = { 10, -44.25 };
 		m_moveLeft = false;
 	}
 
 	if (m_moveRight == true)
 	{
+		//calculate friction velocity and position when moving left
 		m_position.x = m_position.x + m_velocity.x * m_timeChange + 0.5 * m_frictionAcceleration.x * (m_timeChange * m_timeChange);
 		m_velocity = m_velocity + m_frictionAcceleration * m_timeChange;
 		m_position.x = m_position.x + m_velocity.x;
 		m_player.setPosition(m_position);
 	}
+	//boundary
 	if (m_player.getPosition().x > 710)
 	{
 		m_moveRight = false;
 	}
-
+	//reset velocity
+	if (m_velocity.x <= 1)
+	{
+		m_velocity = { 10, -44.25 };
+		m_moveRight = false;
+	}
+	//stops when hits ground
 	if (m_position.y > (m_plane.getPosition().y - 50))
 	{
 		m_jump = false;
 		m_position.y -= 1;
 		m_velocity.y *= -1;
 		m_player.setPosition(m_position);
+	}
+	//resets velocity when jump stops
+
+	if (m_jump == false && m_moveRight == false && m_moveLeft == false )
+	{
+		m_velocity = { 10, -44.25 };
 	}
 }
 

@@ -33,6 +33,7 @@ private:
 	bool m_jump;
 	bool m_moveLeft;
 	bool m_moveRight;
+	bool m_moving;
 
 	sf::Vector2f m_velocity{ 10, -44.25 };
 	float m_pixelToMeter = 20.0;
