@@ -1,0 +1,39 @@
+if (splace pressed && posY == 375 //on ground)
+{
+	velocity -= 200;
+	position y = 374;
+}
+
+
+
+if (pos y < 375)
+{
+	accel = grav
+}
+else
+{
+	velo.y = 0
+	float veloLen = sqrt(vrlo.x*velo.x + velox.y*velo.y)
+	if(velolen != 0)
+	{
+		float unitX = velo.x / sqrt(vrlo.x*velo.x + velox.y*velo.y)
+		sf::vector unitvelo(unitX, 0.0)
+		accel.x = -1.0f*grav.y*unitvelo.x*0.8
+		accel.y = 0
+	}
+	else
+	{
+		accel = sf::vector2f(0,0)
+	}
+	//his formula
+}
+
+
+//do this
+if(left)
+{
+	if(velo.x > -100) //right < + 100
+	{
+		velo.x -= 10.0 //+= 100
+	}
+}
