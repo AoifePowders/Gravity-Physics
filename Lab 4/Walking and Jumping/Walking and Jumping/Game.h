@@ -1,4 +1,4 @@
-// author Apoi
+// author Aoife
 #ifndef GAME
 #define GAME
 #include <SFML/Graphics.hpp>
@@ -18,7 +18,6 @@ private:
 	void processEvents();
 	void update(sf::Time t_deltaTime);
 	void render();
-	void jump();
 	
 	void setup();
 
@@ -35,14 +34,17 @@ private:
 	bool m_moveRight;
 	bool m_moving;
 
-	sf::Vector2f m_velocity{ 10, -44.25 };
+	int jumppause{ 10 };
+
+	sf::Vector2f m_velocity{ 10, 100};
 	float m_pixelToMeter = 20.0;
-	float m_acceleration = 9.8f * 20.0;
+	sf::Vector2f m_acceleration{ 0,9.8 * m_pixelToMeter};
+	sf::Vector2f m_gravity{ 0,9.8 * m_pixelToMeter };
 	float m_coeffFriction = 0.8;
 	sf::Vector2f m_unitVelocity;
 	sf::Vector2f m_frictionAcceleration;
 	float m_timeChange;
-	sf::Vector2f m_position{ 50,450 };
+	sf::Vector2f m_position{ 50,500 };
 
 };
 

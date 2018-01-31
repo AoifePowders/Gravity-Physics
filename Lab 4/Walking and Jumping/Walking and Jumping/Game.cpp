@@ -26,10 +26,10 @@ void Game::run()
 	while (m_window.isOpen())
 	{
 		processEvents(); // as many as possible
+		m_timeChange = timeSinceLastUpdate.asSeconds();
 		timeSinceLastUpdate += clock.restart();
 		while (timeSinceLastUpdate > timePerFrame)
 		{
-			m_timeChange = timeSinceLastUpdate.asSeconds();
 			timeSinceLastUpdate -= timePerFrame;
 			processEvents(); // at least 60 fps
 			update(timePerFrame); //60 fps
@@ -47,7 +47,7 @@ void Game::processEvents()
 	sf::Event event;
 	while (m_window.pollEvent(event))
 	{
-		if ( sf::Event::Closed == event.type) // window message
+		if (sf::Event::Closed == event.type) // window message
 		{
 			m_window.close();
 		}
@@ -60,20 +60,6 @@ void Game::processEvents()
 			}
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		{
-			m_jump = true;
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			m_moveLeft = true;
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		{
-			m_moveRight = true;
-		}
 	}
 	
 }
@@ -88,7 +74,54 @@ void Game::update(sf::Time t_deltaTime)
 	{
 		m_window.close();
 	}
-	jump();
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && m_position.y == 500)
+	{
+		m_velocity.y -= 200;
+		m_position.y -=1;
+		jumppause = 0;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		if (m_velocity.x > -100)
+		{
+			m_velocity.x -= 10.0;
+		}
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		if (m_velocity.x < 100)
+		{
+			m_velocity.x += 10.0;
+		}
+	}
+
+	if (m_position.y < m_plane.getPosition().y)
+	{
+		m_acceleration = m_gravity;
+	}
+		else
+	{
+		m_position.y = m_plane.getPosition().y;
+		m_velocity.y = 0;
+		float veloLen = sqrt(m_velocity.x * m_velocity.x + m_velocity.y * m_velocity.y);
+		if (veloLen != 0)
+		{
+			float unitX = m_velocity.x / veloLen;
+			sf::Vector2f unitVelo(unitX, 0.0);
+			m_acceleration.x = -1.0f * m_gravity.y * unitVelo.x * 0.8;
+			m_acceleration.y = 0;
+		}
+		else
+		{
+			m_acceleration = sf::Vector2f(0, 0);
+		}
+	}
+	m_position = m_position + m_velocity * m_timeChange + 0.5f * m_acceleration * (m_timeChange * m_timeChange);
+	m_velocity = m_velocity + m_acceleration * m_timeChange;
+	m_player.setPosition(m_position);
+
 }
 
 /// <summary>
@@ -100,78 +133,6 @@ void Game::render()
 	m_window.draw(m_player);
 	m_window.draw(m_plane);
 	m_window.display();
-}
-
-void Game::jump()
-{
-	//get unit velocity
-	m_unitVelocity.x = m_velocity.x / sqrt(m_velocity.x*m_velocity.x + m_velocity.y*m_velocity.y);
-	m_unitVelocity.y = m_velocity.y / sqrt(m_velocity.x*m_velocity.x + m_velocity.y*m_velocity.y);
-	//get acceleration
-	m_frictionAcceleration.x = -m_coeffFriction * m_acceleration * m_unitVelocity.x;
-
-	//jump
-	if (m_jump == true)
-	{
-		//calculate the position and velocity
-		(m_position.x, m_position.y) = (m_position.x, m_position.y) + (m_velocity.x, m_velocity.y) * m_timeChange + 0.5 * m_acceleration * (m_timeChange * m_timeChange);
-		m_velocity = m_velocity + sf::Vector2f(0, m_acceleration) * m_timeChange;
-		m_player.setPosition(m_position);
-	}
-
-	if (m_moveLeft == true)
-	{
-		//calculate friction velocity and position when moving left
-		m_position.x = m_position.x + m_velocity.x * m_timeChange + 0.5 * m_frictionAcceleration.x * (m_timeChange * m_timeChange);
-		m_velocity = m_velocity + m_frictionAcceleration * m_timeChange;
-		m_position.x = m_position.x - m_velocity.x;
-		m_player.setPosition(m_position);
-	}
-	//boundary
-	if (m_player.getPosition().x < 10)
-	{
-		m_moveLeft = false;
-	}
-	//reset velocity when stopped
-	if (m_velocity.x <= 1)
-	{
-		m_velocity = { 10, -44.25 };
-		m_moveLeft = false;
-	}
-
-	if (m_moveRight == true)
-	{
-		//calculate friction velocity and position when moving left
-		m_position.x = m_position.x + m_velocity.x * m_timeChange + 0.5 * m_frictionAcceleration.x * (m_timeChange * m_timeChange);
-		m_velocity = m_velocity + m_frictionAcceleration * m_timeChange;
-		m_position.x = m_position.x + m_velocity.x;
-		m_player.setPosition(m_position);
-	}
-	//boundary
-	if (m_player.getPosition().x > 710)
-	{
-		m_moveRight = false;
-	}
-	//reset velocity
-	if (m_velocity.x <= 1)
-	{
-		m_velocity = { 10, -44.25 };
-		m_moveRight = false;
-	}
-	//stops when hits ground
-	if (m_position.y > (m_plane.getPosition().y - 50))
-	{
-		m_jump = false;
-		m_position.y -= 1;
-		m_velocity.y *= -1;
-		m_player.setPosition(m_position);
-	}
-	//resets velocity when jump stops
-
-	if (m_jump == false && m_moveRight == false && m_moveLeft == false )
-	{
-		m_velocity = { 10, -44.25 };
-	}
 }
 
 /// <summary>
@@ -187,10 +148,11 @@ void Game::setup()
 	m_player.setFillColor(sf::Color::Black);
 	m_player.setPosition(m_position);
 	m_player.setSize(sf::Vector2f{ 25,50 });
+	m_player.setOrigin(0, m_player.getGlobalBounds().height);
 
 
 	m_plane.setFillColor(sf::Color::Green);
-	m_plane.setPosition(1, 500);
+	m_plane.setPosition(0, 500);
 	m_plane.setSize(sf::Vector2f{ 800,100 });
 }
 
