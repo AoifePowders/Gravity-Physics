@@ -13,6 +13,7 @@ public:
 	/// main method for game
 	/// </summary>
 	void run();
+	void applyGravity(const float t_mass, sf::Vector2f &t_currentAcceleration, sf::Vector2f t_externalForce);
 
 private:
 
@@ -27,14 +28,18 @@ private:
 
 	sf::RectangleShape m_spaceship;
 	sf::RectangleShape m_plane;
-	sf::Vector2f m_position{ 50, 500 };
+	sf::Vector2f m_position{ 50, 400 };
+
+	sf::RectangleShape m_target;
+	sf::Vector2f m_targetPosition{ 500,100 };
 
 	sf::Vector2f m_velocity{ 10,100 };
-	float m_pixelToMeter = 20.0;
-	sf::Vector2f m_gravity{ 0,9.8 * m_pixelToMeter };
-	sf::Vector2f m_acceleration{ 0,9.8 * m_pixelToMeter };
-	float m_timeChange;
-	
+	const sf::Vector2f gravity{ 0,0.5 };
+	float m_mass = 0;
+	sf::Vector2f m_acceleration{ 0,0 };
+	sf::Vector2f m_thrust{ 0,0 };
+	sf::Vector2f m_originalHeading{ 0,-50 };
+	sf::Vector2f m_headingVector{ m_originalHeading };	
 };
 
 #endif // !GAME
