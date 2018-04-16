@@ -21,9 +21,13 @@
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix3D.cpp" />
+    <ClCompile Include="Vector3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Matrix3D.h" />
+    <ClInclude Include="Vector3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\..\pictures\SFML-LOGO.png" />
