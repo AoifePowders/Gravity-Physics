@@ -3,8 +3,6 @@
 #include "Game.h"
 #include <iostream>
 
-
-
 Game::Game() :
 	m_window{ sf::VideoMode{ 800, 600, 32 }, "SFML Game" },
 	m_exitGame{false} //when true game will exit
@@ -36,10 +34,12 @@ void Game::run()
 		render(); // as many as possible
 	}
 }
-void Game::applyGravity(const float t_mass, Vector3D &t_currentAcceleration, Vector3D t_externalForce)
+
+void Game::applyGravity(const float t_mass, sf::Vector2f &t_currentAcceleration, sf::Vector2f t_externalForce)
 {
-	t_currentAcceleration = Vector3D(gravity.x * t_mass, gravity.y * t_mass, 0) + t_externalForce;
+	t_currentAcceleration = sf::Vector2f(gravity.x * t_mass, gravity.y * t_mass) + t_externalForce;
 }
+
 /// <summary>
 /// handle user and system events/ input
 /// get key presses/ mouse moves etc. from OS
@@ -81,50 +81,33 @@ void Game::update(sf::Time t_deltaTime)
 	}
 	else
 	{
-		m_thrust = Vector3D(0, 0, 0);
+		m_thrust = sf::Vector2f(0, 0);
 	}
 
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	//{
-	//	m_headingVector -= m_adjustment;
-	//	m_velocity -= m_adjustment;
-	//	thor::setLength(m_headingVector, 70.f);
-	//	checkRotate();
-	//}
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	//{
-	//	m_headingVector += m_adjustment;
-	//	m_velocity += m_adjustment;
-	//	thor::setLength(m_headingVector, 70.f);
-	//	checkRotate();
-	//}
-
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		angle += 5;
+		angle += 0.5;
 		m_spaceship.setRotation(angle);
-		m_rotationThing = Matrix3D::rotationX(angle);
-		m_velocity = m_rotationThing.operator*(m_velocity);
-		//m_headingVector = m_rotationThing.operator*(m_headingVector);
+		m_headingVector -= m_adjustment;
+		m_velocity -= m_adjustment;
+		checkRotate();
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		angle -= 5;
+		angle -= 0.5;
 		m_spaceship.setRotation(angle);
-		m_rotationThing = Matrix3D::rotationX(angle);
-		m_velocity = m_rotationThing.operator*(m_velocity);
-		//m_headingVector = m_rotationThing.operator*(m_headingVector);
-	}
+		m_headingVector += m_adjustment;
+		m_velocity += m_adjustment;
+		checkRotate();
+	}*/
 
-	m_position.x = (m_spaceship.getPosition().x + m_velocity.X() * t_deltaTime.asSeconds() + 0.5f * m_acceleration.X() * (t_deltaTime.asSeconds() * t_deltaTime.asSeconds()));
-	m_position.y = (m_spaceship.getPosition().y + m_velocity.Y() * t_deltaTime.asSeconds() + 0.5f * m_acceleration.Y() * (t_deltaTime.asSeconds() * t_deltaTime.asSeconds()));
+	m_position = (m_spaceship.getPosition() + m_velocity * t_deltaTime.asSeconds() + 0.5f * m_acceleration * (t_deltaTime.asSeconds() * t_deltaTime.asSeconds()));
 	applyGravity(m_mass, m_acceleration, m_thrust);
 	m_velocity = m_velocity + (m_acceleration * t_deltaTime.asSeconds());
 	m_spaceship.setPosition(m_position);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	if (m_bulletAlive == false && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
 		m_bulletAlive = true;
 		m_bulletPosition.x = m_position.x;
@@ -141,6 +124,45 @@ void Game::update(sf::Time t_deltaTime)
 	if (m_bullet.getGlobalBounds().intersects(m_target.getGlobalBounds()))
 	{
 		m_bulletAlive = false;
+		m_score += 1;
+		m_scoreText.setString("Score: " + std::to_string(m_score));
+		m_targetPosition.x = rand() % 700 + 100;
+		m_targetPosition.y = rand() % 400 + 100;
+		m_target.setPosition(m_targetPosition);
+	}
+
+	if (m_bulletPosition.x >= 500)
+	{
+		m_bulletAlive = false;
+		m_bullet.setPosition(m_position);
+	}
+
+	if (m_bulletAlive == false)
+	{
+		m_bullet.setPosition(m_position);
+	}
+	
+	if (m_spaceship.getGlobalBounds().intersects(m_plane.getGlobalBounds()))
+	{
+		m_spaceship.setPosition(100, 100);
+		m_lives -= 1;
+		m_livesText.setString("Lives: " + std::to_string(m_lives));
+	}
+
+	if (m_spaceship.getGlobalBounds().intersects(m_target.getGlobalBounds()))
+	{
+		srand(time(nullptr));
+		m_spaceship.setPosition(100, 100);
+		m_lives -= 1;
+		m_livesText.setString("Lives: " + std::to_string(m_lives));
+		m_targetPosition.x = rand() % 700 + 100;
+		m_targetPosition.y = rand() % 500 + 100;
+		m_target.setPosition(m_targetPosition);
+	}
+
+	if (m_lives == 0)
+	{
+		m_gameOver = true;
 	}
 }
 
@@ -150,12 +172,18 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	m_window.clear(sf::Color::White);
+	m_window.draw(m_scoreText);
+	m_window.draw(m_livesText);
 	m_window.draw(m_plane);
 	m_window.draw(m_spaceship);
 	m_window.draw(m_target);
 	if (m_bulletAlive == true)
 	{
 		m_window.draw(m_bullet);
+	}
+	if (m_gameOver == true)
+	{
+		m_window.clear(sf::Color::Black);
 	}
 	m_window.display();
 }
@@ -184,29 +212,41 @@ void Game::setUp()
 	m_bullet.setPosition(m_bulletPosition);
 	m_bullet.setRadius(10);
 
+	m_livesText.setCharacterSize(20);
+	m_livesText.setFillColor(sf::Color::Black);
+	m_livesText.setFont(m_ArialBlackfont);
+	m_livesText.setPosition(100, 50);
+	m_livesText.setString("Lives: " + std::to_string(m_lives));
+
+	m_scoreText.setCharacterSize(20);
+	m_scoreText.setFillColor(sf::Color::Black);
+	m_scoreText.setFont(m_ArialBlackfont);
+	m_scoreText.setPosition(500, 50);
+	m_scoreText.setString("Score: " + std::to_string(m_score));
+
 }
 
 void Game::checkRotate()
 {
 	float angle;
-	if (m_headingVector.X() < 0)
+	if (m_headingVector.x < 0)
 	{
-		angle = 360 + atan(m_headingVector.Y() / m_headingVector.X());
+		angle = 360 + atan(m_headingVector.y / m_headingVector.x);
 	}
 
-	if (m_headingVector.Y() > 0)
+	if (m_headingVector.y > 0)
 	{
-		angle = atan(m_headingVector.Y() / m_headingVector.X());
+		angle = atan(m_headingVector.y / m_headingVector.x);
 	}
 
-	if (m_headingVector.Y() == 0)
+	if (m_headingVector.y == 0)
 	{
 
-		if (m_headingVector.X() < m_originalHeading.X())
+		if (m_headingVector.x < m_originalHeading.x)
 		{
 			angle = 180;
 		}
-		else if (m_headingVector.X() > m_originalHeading.X())
+		else if (m_headingVector.x > m_originalHeading.x)
 		{
 			angle = 0;
 		}
@@ -214,6 +254,5 @@ void Game::checkRotate()
 
 	angle += 90;
 	m_spaceship.setRotation(angle);
-	//m_adjustment = thor::rotatedVector(m_headingVector, 90.0f);
 	//thor::setLength(m_adjustment, m_adjustmentMax);
 }
