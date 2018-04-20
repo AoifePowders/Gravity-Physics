@@ -14,14 +14,12 @@ public:
 	/// main method for game
 	/// </summary>
 	void run();
-	void applyGravity(const float t_mass, sf::Vector2f &t_currentAcceleration, sf::Vector2f t_externalForce);
 private:
 
 	void processEvents();
 	void update(sf::Time t_deltaTime);
 	void render();
 	void setUp();
-	void checkRotate();
 
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_ArialBlackfont; // font used by message
@@ -44,16 +42,16 @@ private:
 	sf::Vector2f m_bulletPosition{ 0,0 };
 	bool m_bulletAlive = false;
 
-	sf::Vector2f m_velocity{ 10,100};
+	sf::Vector2f m_velocity{ 10,100 };
 	const sf::Vector2f gravity{ 0,9.8 * 20 };
 	float m_mass = 0.1;
 	sf::Vector2f m_acceleration{ 0,0 };
 	sf::Vector2f m_thrust{ 0,0 };
-	sf::Vector2f m_originalHeading{ 0,-50 };
-	sf::Vector2f m_headingVector{ m_originalHeading };
+	sf::Vector2f m_headingVector{ 0,-50 };
 
-	sf::Vector2f m_adjustment{ 1.f, 0 };
 	float angle = 0;
+
+	float DEG_TO_RAD = 3.14 / 180;
 };
 
 #endif // !GAME

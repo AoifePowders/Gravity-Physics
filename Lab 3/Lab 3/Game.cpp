@@ -157,25 +157,25 @@ void Game::setupFontAndText()
 	velocityText.setString("Velocity:" + std::to_string(U));
 	velocityText.setCharacterSize(20);
 	velocityText.setPosition(100, 100);
-	velocityText.setColor(sf::Color::White);  
+	velocityText.setFillColor(sf::Color::White);  
 
 	angleText.setFont(m_font);
 	angleText.setString("Angle:" + std::to_string(angle) + " Degrees");
 	angleText.setCharacterSize(20);
 	angleText.setPosition(100, 150);
-	angleText.setColor(sf::Color::White);
+	angleText.setFillColor(sf::Color::White);
 
 	airResText.setFont(m_font);
 	airResText.setString("Air Res :" + std::to_string(Ca));
 	airResText.setCharacterSize(20);
 	airResText.setPosition(100, 200);
-	airResText.setColor(sf::Color::White);
+	airResText.setFillColor(sf::Color::White);
 
 	attemptText.setFont(m_font);
 	attemptText.setString("Attempts :" + std::to_string(attempt));
 	attemptText.setCharacterSize(20);
 	attemptText.setPosition(100, 250);
-	attemptText.setColor(sf::Color::White);
+	attemptText.setFillColor(sf::Color::White);
 
 }
 

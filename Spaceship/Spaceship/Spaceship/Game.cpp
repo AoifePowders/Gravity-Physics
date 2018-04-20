@@ -35,11 +35,6 @@ void Game::run()
 	}
 }
 
-void Game::applyGravity(const float t_mass, sf::Vector2f &t_currentAcceleration, sf::Vector2f t_externalForce)
-{
-	t_currentAcceleration = sf::Vector2f(gravity.x * t_mass, gravity.y * t_mass) + t_externalForce;
-}
-
 /// <summary>
 /// handle user and system events/ input
 /// get key presses/ mouse moves etc. from OS
@@ -77,35 +72,50 @@ void Game::update(sf::Time t_deltaTime)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		m_thrust = m_headingVector;
+		m_velocity = m_headingVector;
 	}
 	else
 	{
-		m_thrust = sf::Vector2f(0, 0);
+		m_velocity = sf::Vector2f{ 0, 0 };
 	}
 
-	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		angle += 0.5;
 		m_spaceship.setRotation(angle);
-		m_headingVector -= m_adjustment;
-		m_velocity -= m_adjustment;
-		checkRotate();
+		sf::Vector2f tempVector = {sin(angle * DEG_TO_RAD), cos(angle * DEG_TO_RAD) };
+
+		if (angle < 180)
+		{
+			m_velocity.x += tempVector.x;
+		}
+
+		if (angle > 180)
+		{
+			m_velocity.y += tempVector.y;
+		}
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		angle -= 0.5;
 		m_spaceship.setRotation(angle);
-		m_headingVector += m_adjustment;
-		m_velocity += m_adjustment;
-		checkRotate();
-	}*/
+		sf::Vector2f tempVector = { sin(angle * DEG_TO_RAD), cos(angle * DEG_TO_RAD) };
+		m_velocity.x += tempVector.x;
+	}
 
 	m_position = (m_spaceship.getPosition() + m_velocity * t_deltaTime.asSeconds() + 0.5f * m_acceleration * (t_deltaTime.asSeconds() * t_deltaTime.asSeconds()));
-	applyGravity(m_mass, m_acceleration, m_thrust);
+	m_acceleration = sf::Vector2f((gravity * m_mass, gravity * m_mass) + m_thrust);
 	m_velocity = m_velocity + (m_acceleration * t_deltaTime.asSeconds());
 	m_spaceship.setPosition(m_position);
+
+
+
+
+
+
+
+
 
 	if (m_bulletAlive == false && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
@@ -131,7 +141,7 @@ void Game::update(sf::Time t_deltaTime)
 		m_target.setPosition(m_targetPosition);
 	}
 
-	if (m_bulletPosition.x >= 500)
+	if (m_bulletPosition.x >= 800)
 	{
 		m_bulletAlive = false;
 		m_bullet.setPosition(m_position);
@@ -163,6 +173,16 @@ void Game::update(sf::Time t_deltaTime)
 	if (m_lives == 0)
 	{
 		m_gameOver = true;
+	}
+
+	if (m_gameOver == true && sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		m_gameOver = false;
+		m_score = 0;
+		m_lives = 3;
+		m_velocity = { 10, 100 };
+		m_targetPosition = { 500, 100 };
+		m_position = { 100,100 };
 	}
 }
 
@@ -224,35 +244,4 @@ void Game::setUp()
 	m_scoreText.setPosition(500, 50);
 	m_scoreText.setString("Score: " + std::to_string(m_score));
 
-}
-
-void Game::checkRotate()
-{
-	float angle;
-	if (m_headingVector.x < 0)
-	{
-		angle = 360 + atan(m_headingVector.y / m_headingVector.x);
-	}
-
-	if (m_headingVector.y > 0)
-	{
-		angle = atan(m_headingVector.y / m_headingVector.x);
-	}
-
-	if (m_headingVector.y == 0)
-	{
-
-		if (m_headingVector.x < m_originalHeading.x)
-		{
-			angle = 180;
-		}
-		else if (m_headingVector.x > m_originalHeading.x)
-		{
-			angle = 0;
-		}
-	}
-
-	angle += 90;
-	m_spaceship.setRotation(angle);
-	//thor::setLength(m_adjustment, m_adjustmentMax);
 }
