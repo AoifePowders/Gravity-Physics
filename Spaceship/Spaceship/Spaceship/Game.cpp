@@ -72,42 +72,35 @@ void Game::update(sf::Time t_deltaTime)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		m_velocity = m_headingVector;
+		m_thrust = m_headingVector;
 	}
 	else
 	{
-		m_velocity = sf::Vector2f{ 0, 0 };
+		m_thrust = sf::Vector2f{ 0, 0 };
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		angle += 0.5;
 		m_spaceship.setRotation(angle);
-		sf::Vector2f tempVector = {sin(angle * DEG_TO_RAD), cos(angle * DEG_TO_RAD) };
-
-		if (angle < 180)
-		{
-			m_velocity.x += tempVector.x;
-		}
-
-		if (angle > 180)
-		{
-			m_velocity.y += tempVector.y;
-		}
+		m_headingVector.x += angle / 2;
+		m_velocity.x += angle / 2;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		angle -= 0.5;
 		m_spaceship.setRotation(angle);
-		sf::Vector2f tempVector = { sin(angle * DEG_TO_RAD), cos(angle * DEG_TO_RAD) };
-		m_velocity.x += tempVector.x;
+		m_headingVector.x += angle / 2;
+		m_velocity.x += angle / 2;
 	}
 
 	m_position = (m_spaceship.getPosition() + m_velocity * t_deltaTime.asSeconds() + 0.5f * m_acceleration * (t_deltaTime.asSeconds() * t_deltaTime.asSeconds()));
 	m_acceleration = sf::Vector2f((gravity * m_mass, gravity * m_mass) + m_thrust);
 	m_velocity = m_velocity + (m_acceleration * t_deltaTime.asSeconds());
 	m_spaceship.setPosition(m_position);
+
+
 
 
 
